@@ -79,6 +79,8 @@ def consulta_cliente(cpf, vetusuarios):
     :param vetusuarios: Recebe todos os usuários cadastrados
     :return: Retorna o nome e email do cliente cadastrado
     '''
+
+    # Para cada usuário, confirma se o CPF é igual aos CPF's cadastrados
     for usuario in vetusuarios:
         if cpf == usuario.cpf:
             print(f"O nome do cliente é {usuario.nome}")
@@ -88,15 +90,9 @@ def consulta_cliente(cpf, vetusuarios):
     continuar = input('\nDigite ENTER para continuar: ')
 
 
-# Lista produtos
-def listar_produtos(vetprodutos):
-    for prod in vetprodutos:
-        print(prod.nome + " ", prod.valor)
-    print()
-
-
-# Compra
+# 3 - Compra
 def comprar(vetusuarios):
+    # Verifica se o usuário ja está logado
     global login
     if login == False:
         p_email = input('Digite seu email: ')
@@ -110,14 +106,20 @@ def comprar(vetusuarios):
                 print('Login Incorreto!')
                 continuar = input('\nDigite ENTER para continuar: ')
                 return
+
+    # Mostra os produtos
     for pos in range(0, len(produtos.cod)):
         print(f'{produtos.cod[pos]:}', end='.')
         print(f'{produtos.nome[pos]:.<40}', end=' ')
         print(f'R$ {produtos.valor[pos]:.2f}', end='\n')
+
+    # Pega as variáveis para armazenar o carrinho temporariamente
     global userTempPrice
     global userTempList
     userTempPrice = []
     userTempList = []
+
+    # Adiciona o item desejado ao carrinho temporário
     item = -2
     while item != -1:
         print('Digite "-1" para parar')
@@ -127,6 +129,8 @@ def comprar(vetusuarios):
         if item >= 0 and item <= 19:
             userTempList.append(item)
             userTempPrice.append(produtos.valor[item])
+
+    # Se o usuário exceder o limite de 1000 Reais. A compra é impossibilitada
     if sum(userTempPrice) <= 1000:
         continuar = input('\nCarrinho finalizado com sucesso! Digite ENTER para continuar: ')
     else:
@@ -135,12 +139,12 @@ def comprar(vetusuarios):
         userTempList = []
 
 
-# Mostrar carrinho
+# 4 - Mostrar carrinho
 def ver_carrinho(vetusuarios):
     if login == False:
-      print('Faça login primeiro!')
-      continuar = input('\nDigite ENTER para continuar: ')
-      return
+        print('Faça login primeiro!')
+        continuar = input('\nDigite ENTER para continuar: ')
+        return
     for c in userTempList:
         print(f'{c}', end='.')
         print(f'{produtos.nome[c]:.<40}', end=' ')
@@ -151,9 +155,9 @@ def ver_carrinho(vetusuarios):
 # 5-Pagar conta
 def pagar_conta(vetusuarios):
     if login == False:
-      print('Faça login primeiro!')
-      continuar = input('\nDigite ENTER para continuar: ')
-      return
+        print('Faça login primeiro!')
+        continuar = input('\nDigite ENTER para continuar: ')
+        return
     ver_carrinho(vetusuarios)
     global userTempPrice
     global userTempList
@@ -163,6 +167,16 @@ def pagar_conta(vetusuarios):
     userTempPrice = []
 
 
+# 6 - Lista produtos
+def listar_produtos():
+    for pos in range(0, len(produtos.cod)):
+        print(f'{produtos.cod[pos]:}', end='.')
+        print(f'{produtos.nome[pos]:.<40}', end=' ')
+        print(f'R$ {produtos.valor[pos]:.2f}', end='\n')
+    continuar = input('\nDigite ENTER para pagar: ')
+
+
+# Validar o CPF
 def validarCPF(numbers):
     #  Obtém os números do CPF e ignora outros caracteres
     cpf = [int(char) for char in numbers if char.isdigit()]
@@ -172,8 +186,6 @@ def validarCPF(numbers):
         return False
 
     #  Verifica se o CPF tem todos os números iguais, ex: 111.111.111-11
-    #  Esses CPFs são considerados inválidos mas passam na validação dos dígitos
-    #  Antigo código para referência: if all(cpf[i] == cpf[i+1] for i in range (0, len(cpf)-1))
     if cpf == cpf[::-1]:
         return False
 
@@ -187,14 +199,12 @@ def validarCPF(numbers):
 
 
 # Menu Principal
-
 def menu():
     opcao = "-1"
     vetusuarios = []
-    vetprodutos = []
     while True:
         opcao = input(
-            "Seja bem vindo! Esse é o menu principal, escolha dentre as seguinte opções:\n\n1- Cadastro\n2- Consultar cliente\n3- Comprar\n4- Carrinho de compras\n5- Pagar conta \n0- Sair\n")
+            "Seja bem vindo! Esse é o menu principal, escolha dentre as seguinte opções:\n\n1- Cadastro\n2- Consultar cliente\n3- Comprar\n4- Carrinho de compras\n5- Pagar conta\n6- Listar produtos\n0- Sair\n")
         if opcao == "1":
             print("Opção selecionada: Cadastro")
             cadastro(vetusuarios)
@@ -213,10 +223,12 @@ def menu():
             pagar_conta(vetusuarios)
         elif opcao == "6":
             print("Opção selecionada: Lista Produtos")
-            listar_produtos(vetprodutos)
+            listar_produtos()
         elif opcao == "0":
             print("Opção selecionada: Sair")
             break
         else:
             print("Opção inválida, tente novamente")
+
+
 menu()
